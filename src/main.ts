@@ -3,14 +3,13 @@ import rockIcon from "./rock_icon.png";
 import scissorsIcon from "./scissors_icon.png";
 import paperIcon from "./paper_icon.png";
 import * as R from "remeda";
-import {keys} from "remeda";
 
 type Vector2D = {
   x: number;
   y: number;
 };
 
-enum ShapeType { Rock, Paper, Scissors }
+type ShapeType = "rock" | "paper" | "scissors";
 
 type Shape = {
   shapeType: ShapeType;
@@ -23,7 +22,7 @@ function generateShapes(): Shape[] {
   return R.pipe(
     R.range(0, count),
     R.map(() => ({
-      shapeType: Math.floor(Math.random() * 3),
+      shapeType: mapIndexToShapeType(Math.floor(Math.random() * 3)),
       position: {
         x: Math.floor(Math.random() * (window.innerWidth - 48)),
         y: Math.floor(Math.random() * (window.innerHeight - 48)),
@@ -36,6 +35,23 @@ function generateShapes(): Shape[] {
   );
 }
 
+//todo maybe improve this later
+function mapIndexToShapeType(index: number): ShapeType {
+  switch (index) {
+    default:
+      return "rock";
+    case 1:
+      return "paper";
+    case 2:
+      return "scissors";
+  }
+}
+
+//todo maybe improve this later
+function convertToTitleCase(string: string): string {
+  return string[0].toUpperCase() + string.slice(1);
+}
+
 function draw(timestamp: DOMHighResTimeStamp): void {
   const delta = (timestamp - lastTimestamp) / (1000 / 60);
   lastTimestamp = timestamp;
@@ -46,7 +62,7 @@ function draw(timestamp: DOMHighResTimeStamp): void {
     R.filter(v => v !== 0),
     R.length()
   ) <= 1;
-  const winningShape = ShapeType[R.maxBy(Object.entries(counts), ([, v]) => v)[0]];
+  const winningShapeType = getWinningShapeType(counts);
 
   ctx.save();
   if (gameOver) {
@@ -57,11 +73,20 @@ function draw(timestamp: DOMHighResTimeStamp): void {
   drawScores(counts);
   ctx.restore();
   if (gameOver) {
-    drawGameOver(winningShape);
+    drawGameOver(winningShapeType);
   }
   shapes = updateShapes(delta, shapes);
 
   window.requestAnimationFrame(draw);
+}
+
+function getWinningShapeType(counts: Record<ShapeType, number>): ShapeType | null {
+  const winningCountEntry = R.maxBy(Object.entries(counts) as [ShapeType, number][], ([, v]) => v);
+  if (winningCountEntry === undefined) {
+    return null;
+  }
+
+  return winningCountEntry[0];
 }
 
 function computeShapeTypeCounts(shapes: Shape[]): Record<ShapeType, number> {
@@ -70,12 +95,12 @@ function computeShapeTypeCounts(shapes: Shape[]): Record<ShapeType, number> {
     R.groupBy(shape => shape.shapeType),
     R.mapValues(value => value.length),
   );
-  counts = R.merge({[ShapeType.Rock]:0,[ShapeType.Scissors]:0,[ShapeType.Paper]:0}, counts); // might be able to improve this
+  counts = R.merge({ rock: 0, scissors: 0, paper: 0 }, counts); // might be able to improve this
 
   return counts;
 }
 
-function drawGameOver(winningShape: ShapeType): void {
+function drawGameOver(winningShapeType: ShapeType | null): void {
   ctx.save();
 
   ctx.font = "48px serif";
@@ -83,7 +108,7 @@ function drawGameOver(winningShape: ShapeType): void {
   ctx.shadowColor = "black";
   ctx.shadowBlur = 15;
   ctx.textAlign = "center";
-  ctx.fillText(`${winningShape} wins!`, width / 2, height / 2);
+  ctx.fillText(`${(winningShapeType != null ? convertToTitleCase(winningShapeType) : "No one")} wins!`, width / 2, height / 2);
 
   ctx.restore();
 }
@@ -150,9 +175,9 @@ function isLosingShapeType(shapeType1: ShapeType, shapeType2: ShapeType): boolea
   }
 
   const losesOver: Record<ShapeType, ShapeType> = {
-    [ShapeType.Paper]: ShapeType.Scissors,
-    [ShapeType.Rock]: ShapeType.Paper,
-    [ShapeType.Scissors]: ShapeType.Rock,
+    ["paper"]: "scissors",
+    ["rock"]: "paper",
+    ["scissors"]: "rock",
   };
 
   return losesOver[shapeType1] === shapeType2;
@@ -175,11 +200,11 @@ function checkForCollision(shape1: Shape, shape2: Shape): boolean {
 
 function mapShapeTypeToImage(shapeType: ShapeType): CanvasImageSource {
   switch (shapeType) {
-    case ShapeType.Paper:
+    case "paper":
       return paperImage;
-    case ShapeType.Rock:
+    case "rock":
       return rockImage;
-    case ShapeType.Scissors:
+    case "scissors":
       return scissorsImage;
   }
 }
@@ -187,7 +212,7 @@ function mapShapeTypeToImage(shapeType: ShapeType): CanvasImageSource {
 function drawScores(counts: Record<ShapeType, number>) {
   const countsText: string = R.pipe(
     Object.entries(counts),
-    R.map(([key, value]) => `${ShapeType[key]}: ${value}`),
+    R.map(([key, value]) => `${convertToTitleCase(key)}: ${value}`),
     R.join("; ")
   );
 
@@ -197,12 +222,12 @@ function drawScores(counts: Record<ShapeType, number>) {
   // ctx.fillText("Test lol", 10, 52);
 }
 
-const canvas = document.querySelector<HTMLCanvasElement>("#canvas");
+const canvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
 const width = (canvas.width = window.innerWidth);
 const height = (canvas.height = window.innerHeight);
 const shapeSize: Vector2D = {x: 48, y: 48};
 
-const ctx = canvas.getContext("2d");
+const ctx = canvas.getContext("2d")!;
 
 const rockImage = new Image();
 rockImage.src = rockIcon;
