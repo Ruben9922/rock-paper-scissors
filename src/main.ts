@@ -140,12 +140,20 @@ function updateShapes(delta: number, shapes: Shape[]): Shape[] {
       updatedShape.position = updatePosition(shape.position, shape.velocity);
 
       // Bounce shape off canvas edge
-      if (updatedShape.position.x < 0 || updatedShape.position.x >= width - shapeSize.x) {
-        updatedShape.velocity.x *= -1;
+      // Using `Math.abs()` to avoid shapes getting "trapped" at edge of window
+      if (updatedShape.position.x < 0) {
+        updatedShape.velocity.x = Math.abs(updatedShape.velocity.x);
+        updatedShape.position = updatePosition(shape.position, shape.velocity);
+      } else if (updatedShape.position.x >= width - shapeSize.x) {
+        updatedShape.velocity.x = -Math.abs(updatedShape.velocity.x);
         updatedShape.position = updatePosition(shape.position, shape.velocity);
       }
-      if (updatedShape.position.y < 0 || updatedShape.position.y >= height - shapeSize.y) {
-        updatedShape.velocity.y *= -1;
+      if (updatedShape.position.y < 0) {
+        updatedShape.velocity.y = Math.abs(updatedShape.velocity.y);
+        updatedShape.position = updatePosition(shape.position, shape.velocity);
+      }
+      if (updatedShape.position.y >= height - shapeSize.y) {
+        updatedShape.velocity.y = -Math.abs(updatedShape.velocity.y);
         updatedShape.position = updatePosition(shape.position, shape.velocity);
       }
 
