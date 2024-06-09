@@ -260,3 +260,11 @@ const resize = (): void => {
 };
 
 window.addEventListener("resize", resize);
+
+const keydownHandler = (event: KeyboardEvent) => {
+    if (event.key === " " && !event.repeat) {
+        shapes = generateShapes();
+    }
+};
+
+window.addEventListener("keydown", keydownHandler)
