@@ -81,7 +81,7 @@ function draw(timestamp: DOMHighResTimeStamp): void {
 }
 
 function getWinningShapeType(counts: Record<ShapeType, number>): ShapeType | null {
-    const winningCountEntry = R.maxBy(Object.entries(counts) as [ShapeType, number][], ([, v]) => v);
+    const winningCountEntry = R.firstBy(Object.entries(counts) as [ShapeType, number][], [([, v]) => v, "desc"]);
     if (winningCountEntry === undefined) {
         return null;
     }

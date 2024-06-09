@@ -13,6 +13,6 @@
     "vite": "^4.4.5"
   },
   "dependencies": {
-    "remeda": "^1.29.0"
+    "remeda": "^2.0.7"
   }
 }
