@@ -18,7 +18,7 @@ type Shape = {
 };
 
 function generateShapes(): Shape[] {
-    const count = 40;
+    const count = computeShapeCount();
     return R.pipe(
         R.range(0, count),
         R.map(() => ({
@@ -33,6 +33,12 @@ function generateShapes(): Shape[] {
             },
         }))
     );
+}
+
+function computeShapeCount(): number {
+    // TODO: Allow user to change density
+    const density = 20000;
+    return Math.floor((width * height) / density);
 }
 
 //todo maybe improve this later
