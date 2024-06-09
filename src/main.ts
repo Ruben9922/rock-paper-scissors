@@ -267,6 +267,12 @@ draw(lastTimestamp);
 const resizeDebouncer = R.debounce(() => {
     width = (canvas.width = window.innerWidth);
     height = (canvas.height = window.innerHeight);
+
+    // Clamp shape positions so they stay within the canvas
+    shapes.forEach(shape => {
+        shape.position.x = R.clamp(shape.position.x, { min: 0, max: width });
+        shape.position.y = R.clamp(shape.position.y, { min: 0, max: height });
+    });
 }, { timing: "both", waitMs: 50 });
 
 const resize = (): void => {
