@@ -267,4 +267,4 @@ const keydownHandler = (event: KeyboardEvent) => {
     }
 };
 
-window.addEventListener("keydown", keydownHandler)
+window.addEventListener("keydown", keydownHandler);
