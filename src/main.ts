@@ -231,7 +231,6 @@ function drawScores(counts: Record<ShapeType, number>) {
     ctx.font = "16px serif";
     ctx.fillStyle = "white";
     ctx.fillText(countsText, 10, 26);
-    // ctx.fillText("Test lol", 10, 52);
 }
 
 function drawControlsText() {
