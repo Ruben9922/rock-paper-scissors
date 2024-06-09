@@ -71,6 +71,7 @@ function draw(timestamp: DOMHighResTimeStamp): void {
     drawBackground();
     drawShapes(shapes);
     drawScores(counts);
+    drawControlsText();
     ctx.restore();
     if (gameOver) {
         drawGameOver(winningShapeType);
@@ -109,6 +110,9 @@ function drawGameOver(winningShapeType: ShapeType | null): void {
     ctx.shadowBlur = 15;
     ctx.textAlign = "center";
     ctx.fillText(`${(winningShapeType != null ? convertToTitleCase(winningShapeType) : "No one")} wins!`, width / 2, height / 2);
+
+    ctx.font = "18px serif";
+    ctx.fillText("Press space key to reset", width / 2, (height / 2) + 30);
 
     ctx.restore();
 }
@@ -228,6 +232,17 @@ function drawScores(counts: Record<ShapeType, number>) {
     ctx.fillStyle = "white";
     ctx.fillText(countsText, 10, 26);
     // ctx.fillText("Test lol", 10, 52);
+}
+
+function drawControlsText() {
+    ctx.save();
+
+    ctx.font = "16px serif";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "right";
+    ctx.fillText("Press space to reset", width - 10, 26);
+
+    ctx.restore();
 }
 
 const canvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
