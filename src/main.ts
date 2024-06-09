@@ -231,8 +231,8 @@ function drawScores(counts: Record<ShapeType, number>) {
 }
 
 const canvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
-const width = (canvas.width = window.innerWidth);
-const height = (canvas.height = window.innerHeight);
+let width = (canvas.width = window.innerWidth);
+let height = (canvas.height = window.innerHeight);
 const shapeSize: Vector2D = {x: 48, y: 48};
 
 const ctx = canvas.getContext("2d")!;
@@ -249,4 +249,14 @@ let lastTimestamp: DOMHighResTimeStamp = 0;
 let shapes = generateShapes();
 draw(lastTimestamp);
 
-//todo handle resizing
+// Handle resizing
+const resizeDebouncer = R.debounce(() => {
+    width = (canvas.width = window.innerWidth);
+    height = (canvas.height = window.innerHeight);
+}, { timing: "both", waitMs: 50 });
+
+const resize = (): void => {
+    resizeDebouncer.call();
+};
+
+window.addEventListener("resize", resize);
