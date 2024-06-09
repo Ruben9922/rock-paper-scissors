@@ -5,229 +5,229 @@ import paperIcon from "./paper_icon.png";
 import * as R from "remeda";
 
 type Vector2D = {
-  x: number;
-  y: number;
+    x: number;
+    y: number;
 };
 
 type ShapeType = "rock" | "paper" | "scissors";
 
 type Shape = {
-  shapeType: ShapeType;
-  position: Vector2D;
-  velocity: Vector2D;
+    shapeType: ShapeType;
+    position: Vector2D;
+    velocity: Vector2D;
 };
 
 function generateShapes(): Shape[] {
-  const count = 40;
-  return R.pipe(
-    R.range(0, count),
-    R.map(() => ({
-      shapeType: mapIndexToShapeType(Math.floor(Math.random() * 3)),
-      position: {
-        x: Math.floor(Math.random() * (window.innerWidth - 48)),
-        y: Math.floor(Math.random() * (window.innerHeight - 48)),
-      },
-      velocity: {
-        x: 0.5 + Math.floor(Math.random() * 1.5),
-        y: 0.5 + Math.floor(Math.random() * 1.5),
-      },
-    }))
-  );
+    const count = 40;
+    return R.pipe(
+        R.range(0, count),
+        R.map(() => ({
+            shapeType: mapIndexToShapeType(Math.floor(Math.random() * 3)),
+            position: {
+                x: Math.floor(Math.random() * (window.innerWidth - 48)),
+                y: Math.floor(Math.random() * (window.innerHeight - 48)),
+            },
+            velocity: {
+                x: 0.5 + Math.floor(Math.random() * 1.5),
+                y: 0.5 + Math.floor(Math.random() * 1.5),
+            },
+        }))
+    );
 }
 
 //todo maybe improve this later
 function mapIndexToShapeType(index: number): ShapeType {
-  switch (index) {
-    default:
-      return "rock";
-    case 1:
-      return "paper";
-    case 2:
-      return "scissors";
-  }
+    switch (index) {
+        default:
+            return "rock";
+        case 1:
+            return "paper";
+        case 2:
+            return "scissors";
+    }
 }
 
 //todo maybe improve this later
 function convertToTitleCase(string: string): string {
-  return string[0].toUpperCase() + string.slice(1);
+    return string[0].toUpperCase() + string.slice(1);
 }
 
 function draw(timestamp: DOMHighResTimeStamp): void {
-  const delta = (timestamp - lastTimestamp) / (1000 / 60);
-  lastTimestamp = timestamp;
+    const delta = (timestamp - lastTimestamp) / (1000 / 60);
+    lastTimestamp = timestamp;
 
-  const counts = computeShapeTypeCounts(shapes);
-  const gameOver = R.pipe(
-    Object.values(counts),
-    R.filter(v => v !== 0),
-    R.length()
-  ) <= 1;
-  const winningShapeType = getWinningShapeType(counts);
+    const counts = computeShapeTypeCounts(shapes);
+    const gameOver = R.pipe(
+        Object.values(counts),
+        R.filter(v => v !== 0),
+        R.length()
+    ) <= 1;
+    const winningShapeType = getWinningShapeType(counts);
 
-  ctx.save();
-  if (gameOver) {
-    ctx.filter = "blur(6px)";
-  }
-  drawBackground();
-  drawShapes(shapes);
-  drawScores(counts);
-  ctx.restore();
-  if (gameOver) {
-    drawGameOver(winningShapeType);
-  }
-  shapes = updateShapes(delta, shapes);
+    ctx.save();
+    if (gameOver) {
+        ctx.filter = "blur(6px)";
+    }
+    drawBackground();
+    drawShapes(shapes);
+    drawScores(counts);
+    ctx.restore();
+    if (gameOver) {
+        drawGameOver(winningShapeType);
+    }
+    shapes = updateShapes(delta, shapes);
 
-  window.requestAnimationFrame(draw);
+    window.requestAnimationFrame(draw);
 }
 
 function getWinningShapeType(counts: Record<ShapeType, number>): ShapeType | null {
-  const winningCountEntry = R.maxBy(Object.entries(counts) as [ShapeType, number][], ([, v]) => v);
-  if (winningCountEntry === undefined) {
-    return null;
-  }
+    const winningCountEntry = R.maxBy(Object.entries(counts) as [ShapeType, number][], ([, v]) => v);
+    if (winningCountEntry === undefined) {
+        return null;
+    }
 
-  return winningCountEntry[0];
+    return winningCountEntry[0];
 }
 
 function computeShapeTypeCounts(shapes: Shape[]): Record<ShapeType, number> {
-  let counts: Record<ShapeType, number> = R.pipe(
-    shapes,
-    R.groupBy(shape => shape.shapeType),
-    R.mapValues(value => value.length),
-  );
-  counts = R.merge({ rock: 0, scissors: 0, paper: 0 }, counts); // might be able to improve this
+    let counts: Record<ShapeType, number> = R.pipe(
+        shapes,
+        R.groupBy(shape => shape.shapeType),
+        R.mapValues(value => value.length),
+    );
+    counts = R.merge({ rock: 0, scissors: 0, paper: 0 }, counts); // might be able to improve this
 
-  return counts;
+    return counts;
 }
 
 function drawGameOver(winningShapeType: ShapeType | null): void {
-  ctx.save();
+    ctx.save();
 
-  ctx.font = "48px serif";
-  ctx.fillStyle = "white";
-  ctx.shadowColor = "black";
-  ctx.shadowBlur = 15;
-  ctx.textAlign = "center";
-  ctx.fillText(`${(winningShapeType != null ? convertToTitleCase(winningShapeType) : "No one")} wins!`, width / 2, height / 2);
+    ctx.font = "48px serif";
+    ctx.fillStyle = "white";
+    ctx.shadowColor = "black";
+    ctx.shadowBlur = 15;
+    ctx.textAlign = "center";
+    ctx.fillText(`${(winningShapeType != null ? convertToTitleCase(winningShapeType) : "No one")} wins!`, width / 2, height / 2);
 
-  ctx.restore();
+    ctx.restore();
 }
 
 function drawBackground(): void {
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  ctx.fillStyle = "rgb(79 79 79)";
-  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.fillStyle = "rgb(79 79 79)";
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
 function drawShapes(shapes: Shape[]): void {
-  shapes.forEach(shape => {
-    ctx.drawImage(mapShapeTypeToImage(shape.shapeType), shape.position.x, shape.position.y);
-  });
+    shapes.forEach(shape => {
+        ctx.drawImage(mapShapeTypeToImage(shape.shapeType), shape.position.x, shape.position.y);
+    });
 }
 
 function updateShapes(delta: number, shapes: Shape[]): Shape[] {
-  const updatePosition = (position: Vector2D, velocity: Vector2D): Vector2D => ({
-    x: position.x + velocity.x * delta * 5,
-    y: position.y + velocity.y * delta * 5,
-  });
+    const updatePosition = (position: Vector2D, velocity: Vector2D): Vector2D => ({
+        x: position.x + velocity.x * delta * 5,
+        y: position.y + velocity.y * delta * 5,
+    });
 
-  shapes = R.pipe(
-    shapes,
-    R.map(shape => {
-      let updatedShape = R.clone(shape);
+    shapes = R.pipe(
+        shapes,
+        R.map(shape => {
+            let updatedShape = R.clone(shape);
 
-      // Update position based on velocity
-      updatedShape.position = updatePosition(shape.position, shape.velocity);
+            // Update position based on velocity
+            updatedShape.position = updatePosition(shape.position, shape.velocity);
 
-      // Bounce shape off canvas edge
-      // Using `Math.abs()` to avoid shapes getting "trapped" at edge of window
-      if (updatedShape.position.x < 0) {
-        updatedShape.velocity.x = Math.abs(updatedShape.velocity.x);
-        updatedShape.position = updatePosition(shape.position, shape.velocity);
-      } else if (updatedShape.position.x >= width - shapeSize.x) {
-        updatedShape.velocity.x = -Math.abs(updatedShape.velocity.x);
-        updatedShape.position = updatePosition(shape.position, shape.velocity);
-      }
-      if (updatedShape.position.y < 0) {
-        updatedShape.velocity.y = Math.abs(updatedShape.velocity.y);
-        updatedShape.position = updatePosition(shape.position, shape.velocity);
-      }
-      if (updatedShape.position.y >= height - shapeSize.y) {
-        updatedShape.velocity.y = -Math.abs(updatedShape.velocity.y);
-        updatedShape.position = updatePosition(shape.position, shape.velocity);
-      }
+            // Bounce shape off canvas edge
+            // Using `Math.abs()` to avoid shapes getting "trapped" at edge of window
+            if (updatedShape.position.x < 0) {
+                updatedShape.velocity.x = Math.abs(updatedShape.velocity.x);
+                updatedShape.position = updatePosition(shape.position, shape.velocity);
+            } else if (updatedShape.position.x >= width - shapeSize.x) {
+                updatedShape.velocity.x = -Math.abs(updatedShape.velocity.x);
+                updatedShape.position = updatePosition(shape.position, shape.velocity);
+            }
+            if (updatedShape.position.y < 0) {
+                updatedShape.velocity.y = Math.abs(updatedShape.velocity.y);
+                updatedShape.position = updatePosition(shape.position, shape.velocity);
+            }
+            if (updatedShape.position.y >= height - shapeSize.y) {
+                updatedShape.velocity.y = -Math.abs(updatedShape.velocity.y);
+                updatedShape.position = updatePosition(shape.position, shape.velocity);
+            }
 
-      return updatedShape;
-    }),
-    R.map(shape => {
-      let updatedShape = R.clone(shape);
+            return updatedShape;
+        }),
+        R.map(shape => {
+            let updatedShape = R.clone(shape);
 
-      // Check for collisions with other (losing) shapes and update shape type accordingly
-      const collidingShape = R.find(shapes, shape2 =>
-        isLosingShapeType(shape.shapeType, shape2.shapeType) && checkForCollision(shape, shape2));
+            // Check for collisions with other (losing) shapes and update shape type accordingly
+            const collidingShape = R.find(shapes, shape2 =>
+                isLosingShapeType(shape.shapeType, shape2.shapeType) && checkForCollision(shape, shape2));
 
-      if (collidingShape !== undefined) {
-        updatedShape.shapeType = collidingShape.shapeType;
-      }
+            if (collidingShape !== undefined) {
+                updatedShape.shapeType = collidingShape.shapeType;
+            }
 
-      return updatedShape;
-    })
-  );
+            return updatedShape;
+        })
+    );
 
-  return shapes;
+    return shapes;
 }
 
 function isLosingShapeType(shapeType1: ShapeType, shapeType2: ShapeType): boolean {
-  if (shapeType1 === shapeType2) {
-    return false;
-  }
+    if (shapeType1 === shapeType2) {
+        return false;
+    }
 
-  const losesOver: Record<ShapeType, ShapeType> = {
-    ["paper"]: "scissors",
-    ["rock"]: "paper",
-    ["scissors"]: "rock",
-  };
+    const losesOver: Record<ShapeType, ShapeType> = {
+        ["paper"]: "scissors",
+        ["rock"]: "paper",
+        ["scissors"]: "rock",
+    };
 
-  return losesOver[shapeType1] === shapeType2;
+    return losesOver[shapeType1] === shapeType2;
 }
 
 function checkForCollision(shape1: Shape, shape2: Shape): boolean {
-  // Not sure if there's a better way
-  return (
-    shape2.position.x > shape1.position.x
-      && shape2.position.x < shape1.position.x + shapeSize.x
-      && shape2.position.y > shape1.position.y
-      && shape2.position.y < shape1.position.y + shapeSize.y
-  ) || (
-    shape1.position.x > shape2.position.x
-      && shape1.position.x < shape2.position.x + shapeSize.x
-      && shape1.position.y > shape2.position.y
-      && shape1.position.y < shape2.position.y + shapeSize.y
-  );
+    // Not sure if there's a better way
+    return (
+        shape2.position.x > shape1.position.x
+        && shape2.position.x < shape1.position.x + shapeSize.x
+        && shape2.position.y > shape1.position.y
+        && shape2.position.y < shape1.position.y + shapeSize.y
+    ) || (
+        shape1.position.x > shape2.position.x
+        && shape1.position.x < shape2.position.x + shapeSize.x
+        && shape1.position.y > shape2.position.y
+        && shape1.position.y < shape2.position.y + shapeSize.y
+    );
 }
 
 function mapShapeTypeToImage(shapeType: ShapeType): CanvasImageSource {
-  switch (shapeType) {
-    case "paper":
-      return paperImage;
-    case "rock":
-      return rockImage;
-    case "scissors":
-      return scissorsImage;
-  }
+    switch (shapeType) {
+        case "paper":
+            return paperImage;
+        case "rock":
+            return rockImage;
+        case "scissors":
+            return scissorsImage;
+    }
 }
 
 function drawScores(counts: Record<ShapeType, number>) {
-  const countsText: string = R.pipe(
-    Object.entries(counts),
-    R.map(([key, value]) => `${convertToTitleCase(key)}: ${value}`),
-    R.join("; ")
-  );
+    const countsText: string = R.pipe(
+        Object.entries(counts),
+        R.map(([key, value]) => `${convertToTitleCase(key)}: ${value}`),
+        R.join("; ")
+    );
 
-  ctx.font = "16px serif";
-  ctx.fillStyle = "white";
-  ctx.fillText(countsText, 10, 26);
-  // ctx.fillText("Test lol", 10, 52);
+    ctx.font = "16px serif";
+    ctx.fillStyle = "white";
+    ctx.fillText(countsText, 10, 26);
+    // ctx.fillText("Test lol", 10, 52);
 }
 
 const canvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
