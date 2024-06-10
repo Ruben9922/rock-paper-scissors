@@ -18,23 +18,33 @@ type Shape = {
     shapeType: ShapeType;
     position: Vector2D;
     velocity: Vector2D;
+    appearTime?: number;
 };
 
 function generateShapes(): Shape[] {
     const count = computeShapeCount();
     return R.pipe(
         R.range(0, count),
-        R.map(() => ({
-            shapeType: mapIndexToShapeType(Math.floor(Math.random() * 3)),
-            position: {
-                x: Math.floor(Math.random() * (window.innerWidth - 48)),
-                y: Math.floor(Math.random() * (window.innerHeight - 48)),
-            },
-            velocity: {
-                x: 0.5 + Math.floor(Math.random() * 1.5),
-                y: 0.5 + Math.floor(Math.random() * 1.5),
-            },
-        }))
+        R.map((index) => {
+            const normalizedIndex = index / count;
+            const normalizedShapeAppearTime = (1 - (13 ** -normalizedIndex)) / (1 - (13 ** -1));
+            const startTime = 200;
+            const duration = 900;
+            const shapeAppearTime = (normalizedShapeAppearTime * duration) + startTime;
+
+            return ({
+                shapeType: mapIndexToShapeType(Math.floor(Math.random() * 3)),
+                position: {
+                    x: Math.floor(Math.random() * (window.innerWidth - 48)),
+                    y: Math.floor(Math.random() * (window.innerHeight - 48)),
+                },
+                velocity: {
+                    x: 0.5 + Math.floor(Math.random() * 1.5),
+                    y: 0.5 + Math.floor(Math.random() * 1.5),
+                },
+                appearTime: shapeAppearTime,
+            });
+        })
     );
 }
 
@@ -86,7 +96,8 @@ function draw(timestamp: DOMHighResTimeStamp): void {
         drawGameOver(winningShapeType);
     }
 
-    if (timestamp - gameStartedTimestamp >= 1600) {
+    const animationDuration = 1600;
+    if (timestamp - gameStartedTimestamp >= animationDuration) {
         shapes = updateShapes(delta, shapes);
     }
 
@@ -134,13 +145,8 @@ function drawBackground(): void {
 }
 
 function drawShapes(shapes: Shape[], timestamp: DOMHighResTimeStamp): void {
-    shapes.forEach((shape, index) => {
-        const x = index / shapes.length;
-        const shapeAppearTimeNormalised = (1 - (13 ** -x)) / (1 - (13 ** -1));
-        const startTime = 200;
-        const endTime = 900;
-        const shapeAppearTime = (shapeAppearTimeNormalised * endTime) + startTime;
-        if (timestamp - gameStartedTimestamp >= shapeAppearTime) {
+    shapes.forEach(shape => {
+        if (shape.appearTime === undefined || timestamp - gameStartedTimestamp >= shape.appearTime) {
             ctx.drawImage(mapShapeTypeToImage(shape.shapeType), shape.position.x, shape.position.y);
         }
     });
