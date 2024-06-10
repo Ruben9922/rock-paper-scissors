@@ -1,10 +1,10 @@
 import "./style.css";
-import rockIcon from "./rock_icon.png";
-import scissorsIcon from "./scissors_icon.png";
-import paperIcon from "./paper_icon.png";
 import * as R from "remeda";
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
+import paperIcon from "./paper_icon.png";
+import rockIcon from "./rock_icon.png";
+import scissorsIcon from "./scissors_icon.png";
 import "@fontsource/inter/700.css";
 
 type Vector2D = {
@@ -100,14 +100,12 @@ function getWinningShapeType(counts: Record<ShapeType, number>): ShapeType | nul
 }
 
 function computeShapeTypeCounts(shapes: Shape[]): Record<ShapeType, number> {
-    let counts: Record<ShapeType, number> = R.pipe(
+    const counts: Partial<Record<ShapeType, number>> = R.pipe(
         shapes,
         R.groupBy(shape => shape.shapeType),
         R.mapValues(value => value.length),
-    );
-    counts = R.merge({ rock: 0, scissors: 0, paper: 0 }, counts); // might be able to improve this
-
-    return counts;
+    ); // might be able to improve this
+    return R.merge({rock: 0, scissors: 0, paper: 0}, counts) as Record<ShapeType, number>;
 }
 
 function drawGameOver(winningShapeType: ShapeType | null): void {
