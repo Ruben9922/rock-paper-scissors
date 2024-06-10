@@ -85,7 +85,10 @@ function draw(timestamp: DOMHighResTimeStamp): void {
     if (gameOver) {
         drawGameOver(winningShapeType);
     }
-    shapes = updateShapes(delta, shapes);
+
+    if (timestamp - gameStartedTimestamp >= 250) {
+        shapes = updateShapes(delta, shapes);
+    }
 
     window.requestAnimationFrame(draw);
 }
@@ -266,6 +269,7 @@ const paperImage = new Image();
 paperImage.src = paperIcon;
 
 let lastTimestamp: DOMHighResTimeStamp = 0;
+let gameStartedTimestamp: DOMHighResTimeStamp = 0;
 
 let shapes = generateShapes();
 draw(lastTimestamp);
@@ -292,6 +296,7 @@ window.addEventListener("resize", resize);
 const keydownHandler = (event: KeyboardEvent) => {
     if (event.key === " " && !event.repeat) {
         shapes = generateShapes();
+        gameStartedTimestamp = event.timeStamp;
     }
 };
 
