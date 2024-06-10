@@ -3,6 +3,9 @@ import rockIcon from "./rock_icon.png";
 import scissorsIcon from "./scissors_icon.png";
 import paperIcon from "./paper_icon.png";
 import * as R from "remeda";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/700.css";
 
 type Vector2D = {
     x: number;
@@ -110,14 +113,14 @@ function computeShapeTypeCounts(shapes: Shape[]): Record<ShapeType, number> {
 function drawGameOver(winningShapeType: ShapeType | null): void {
     ctx.save();
 
-    ctx.font = "48px serif";
+    ctx.font = "48px Inter, sans-serif";
     ctx.fillStyle = "white";
     ctx.shadowColor = "black";
     ctx.shadowBlur = 15;
     ctx.textAlign = "center";
     ctx.fillText(`${(winningShapeType != null ? convertToTitleCase(winningShapeType) : "No one")} wins!`, width / 2, height / 2);
 
-    ctx.font = "18px serif";
+    ctx.font = "18px Inter, sans-serif";
     ctx.fillText("Press space key to reset", width / 2, (height / 2) + 30);
 
     ctx.restore();
@@ -234,7 +237,7 @@ function drawScores(counts: Record<ShapeType, number>) {
         R.join("; ")
     );
 
-    ctx.font = "16px serif";
+    ctx.font = "16px Inter, sans-serif";
     ctx.fillStyle = "white";
     ctx.fillText(countsText, 10, 26);
 }
@@ -242,7 +245,7 @@ function drawScores(counts: Record<ShapeType, number>) {
 function drawControlsText() {
     ctx.save();
 
-    ctx.font = "16px serif";
+    ctx.font = "16px Inter, sans-serif";
     ctx.fillStyle = "white";
     ctx.textAlign = "right";
     ctx.fillText("Press space to reset", width - 10, 26);

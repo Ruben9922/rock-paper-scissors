@@ -13,6 +13,7 @@
     "vite": "^4.4.5"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.0.18",
     "remeda": "^2.0.7"
   }
 }
