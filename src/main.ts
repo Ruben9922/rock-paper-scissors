@@ -273,19 +273,20 @@ let shapes = generateShapes();
 draw(lastTimestamp);
 
 // Handle resizing
-const resizeDebouncer = R.debounce(() => {
+const canvasSizeResizeDebouncer = R.debounce(() => {
     width = (canvas.width = window.innerWidth);
     height = (canvas.height = window.innerHeight);
-
-    // Clamp shape positions so they stay within the canvas
-    shapes.forEach(shape => {
-        shape.position.x = R.clamp(shape.position.x, { min: 0, max: width });
-        shape.position.y = R.clamp(shape.position.y, { min: 0, max: height });
-    });
 }, { timing: "both", waitMs: 50 });
 
+const regenerateShapesResizeDebouncer = R.debounce(() => {
+    // Easier just to reset shapes since the number of shapes is based on window size and would be awkward to adjust
+    // Also it means we don't have to worry about shapes being outside the canvas
+    shapes = generateShapes();
+}, { timing: "trailing", waitMs: 500 });
+
 const resize = (): void => {
-    resizeDebouncer.call();
+    canvasSizeResizeDebouncer.call();
+    regenerateShapesResizeDebouncer.call();
 };
 
 window.addEventListener("resize", resize);
