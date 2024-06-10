@@ -50,8 +50,8 @@ function generateShapes(): Shape[] {
 
 function computeShapeCount(): number {
     // TODO: Allow user to change density
-    const density = 20000;
-    return Math.floor((width * height) / density);
+    const density = 1 / 20000;
+    return Math.floor((width * height) * density);
 }
 
 //todo maybe improve this later
