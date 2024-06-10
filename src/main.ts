@@ -86,7 +86,7 @@ function draw(timestamp: DOMHighResTimeStamp): void {
         drawGameOver(winningShapeType);
     }
 
-    if (timestamp - gameStartedTimestamp >= 1300) {
+    if (timestamp - gameStartedTimestamp >= 1600) {
         shapes = updateShapes(delta, shapes);
     }
 
@@ -135,8 +135,12 @@ function drawBackground(): void {
 
 function drawShapes(shapes: Shape[], timestamp: DOMHighResTimeStamp): void {
     shapes.forEach((shape, index) => {
+        const x = index / shapes.length;
+        // const shapeAppearTimeNormalised = (((2 ** (x * 10)) - 1) / 1023);
+        const shapeAppearTimeNormalised = (1 - (13 ** -x)) / (1 - (13 ** -1));
+        const startTime = 200;
         const endTime = 900;
-        const shapeAppearTime = (index * endTime) / shapes.length;
+        const shapeAppearTime = (shapeAppearTimeNormalised * endTime) + startTime;
         if (timestamp - gameStartedTimestamp >= shapeAppearTime) {
             ctx.drawImage(mapShapeTypeToImage(shape.shapeType), shape.position.x, shape.position.y);
         }
