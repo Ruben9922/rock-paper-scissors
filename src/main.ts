@@ -136,7 +136,6 @@ function drawBackground(): void {
 function drawShapes(shapes: Shape[], timestamp: DOMHighResTimeStamp): void {
     shapes.forEach((shape, index) => {
         const x = index / shapes.length;
-        // const shapeAppearTimeNormalised = (((2 ** (x * 10)) - 1) / 1023);
         const shapeAppearTimeNormalised = (1 - (13 ** -x)) / (1 - (13 ** -1));
         const startTime = 200;
         const endTime = 900;
