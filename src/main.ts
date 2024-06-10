@@ -78,7 +78,7 @@ function draw(timestamp: DOMHighResTimeStamp): void {
         ctx.filter = "blur(6px)";
     }
     drawBackground();
-    drawShapes(shapes);
+    drawShapes(shapes, timestamp);
     drawScores(counts);
     drawControlsText();
     ctx.restore();
@@ -86,7 +86,7 @@ function draw(timestamp: DOMHighResTimeStamp): void {
         drawGameOver(winningShapeType);
     }
 
-    if (timestamp - gameStartedTimestamp >= 250) {
+    if (timestamp - gameStartedTimestamp >= 1300) {
         shapes = updateShapes(delta, shapes);
     }
 
@@ -133,9 +133,13 @@ function drawBackground(): void {
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
-function drawShapes(shapes: Shape[]): void {
-    shapes.forEach(shape => {
-        ctx.drawImage(mapShapeTypeToImage(shape.shapeType), shape.position.x, shape.position.y);
+function drawShapes(shapes: Shape[], timestamp: DOMHighResTimeStamp): void {
+    shapes.forEach((shape, index) => {
+        const endTime = 900;
+        const shapeAppearTime = (index * endTime) / shapes.length;
+        if (timestamp - gameStartedTimestamp >= shapeAppearTime) {
+            ctx.drawImage(mapShapeTypeToImage(shape.shapeType), shape.position.x, shape.position.y);
+        }
     });
 }
 
